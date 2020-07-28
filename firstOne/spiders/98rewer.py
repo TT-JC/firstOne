@@ -27,7 +27,7 @@ class JbSpider(scrapy.Spider):
         # item['torrentMessage'] = response.xpath(
         #     "//*[@id='pid2819543']/tbody/tr[1]/td[2]/div[2]/div/div[1]/div[2]/ignore_js_op/dl/dd/p[3]/text()").extract()
         items = []
-        for i in range(337684, 370000):  # 0-99
+        for i in range(1, 370000):  # 0-99
             item = {}
             item['thread'] = i  # 记录帖子序号
             response_transient = requests.get(
