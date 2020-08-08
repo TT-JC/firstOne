@@ -36,7 +36,7 @@ class JbPipeline:
         self.count += 1
         print(type(item))
         print(dict(item))
-        content = json.dumps(dict(item), ensure_ascii=False) + "\n"
+        content = json.dumps(item, ensure_ascii=False) + "\n"
         self.file.write(content.encode("utf-8"))
         if self.count == 5:
             self.file.close()
