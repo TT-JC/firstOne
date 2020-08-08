@@ -39,8 +39,8 @@ class JbSpider(scrapy.Spider):
                 soup = bs4.BeautifulSoup(
                     response_transient.text, 'html.parser')  # 对内容进行bs4包装
                 head_tag = soup.head  # 定义head的Tag（重复利用）
-                if head_tag.title:  # 记录帖子标题
-                    item['title'] = head_tag.title
+                if head_tag.title.string:  # 记录帖子标题
+                    item['title'] = head_tag.title.string
                 else:
                     item['title'] = 'error'
                 if head_tag.select('meta')[1]['content']:  # 记录帖子关键字
