@@ -32,7 +32,7 @@ class JbPipeline:
     def process_item(self, item, spider):
 
         if self.count == 0:
-            self.file = open('~/x1.json', 'ab+')
+            self.file = open('/root/x1.json', 'ab+')
         self.count += 1
 
         content = json.dumps(dict(item), ensure_ascii=False) + "\n"

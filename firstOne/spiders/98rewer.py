@@ -19,7 +19,7 @@ class JbSpider(scrapy.Spider):
         item = JbItem()
 
         items = []
-        with open('~/x0.json', 'r', encoding='utf-8') as f:  # 打开扫描文件
+        with open('/root/x0.json', 'r', encoding='utf-8') as f:  # 打开扫描文件
             # file = open('~/x0.json', 'ab+')  # 打开记录文件
             while 1:
                 count += 1  # 过程计数
