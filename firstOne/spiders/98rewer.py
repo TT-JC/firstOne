@@ -3,6 +3,7 @@ from firstOne.items import JbItem
 import bs4
 import requests
 import json
+import re
 
 
 class JbSpider(scrapy.Spider):
@@ -18,7 +19,7 @@ class JbSpider(scrapy.Spider):
         count = 0
         item = JbItem()
 
-        items = []
+        # items = []
         with open('/root/x0.json', 'r', encoding='utf-8') as f:  # 打开扫描文件
             # file = open('~/x0.json', 'ab+')  # 打开记录文件
             while 1:
@@ -31,30 +32,20 @@ class JbSpider(scrapy.Spider):
                 jsonLine = json.loads(jsonLinestr)  # 转换数据
                 # 筛选数据（目标记录数据）
                 i = jsonLine['thread']
-                if i <= 5132:
-                    continue
-                item = {}
+                # if i <= 5132:
+                #     continue
+
+                item = {}           # 清空字典
                 item['thread'] = i  # 记录帖子序号
                 response_transient = requests.get(
                     response.url + str(item['thread']))  # 获取新url请求内容对象
-                soup = bs4.BeautifulSoup(
-                    response_transient.text, 'html.parser')  # 对内容进行bs4包装
-                head_tag = soup.head  # 定义head的Tag（重复利用）
-                if head_tag.title.string:  # 记录帖子标题
-                    item['title'] = head_tag.title.string
-                else:
-                    item['title'] = 'error'
-                if head_tag.select('meta')[1]['content']:  # 记录帖子关键字
-                    item['keywords'] = head_tag.select('meta')[1]['content']
-                else:
-                    item['keywords'] = 'error'
-                if head_tag.select('meta')[2]['content']:  # 记录帖子描述
-                    item['description'] = head_tag.select('meta')[2]['content']
-                else:
-                    item['description'] = 'error'
+
+                self.getcontent(response_transient, item)
                 # print(item)
                 # items.append(item)
+
                 yield item  # 获取数据，执行pipe，继续执行
+
         # return items  # 获取数据结束程序
         # print(requests.get(urlSend))
         #
@@ -91,3 +82,39 @@ class JbSpider(scrapy.Spider):
         #     file_object.write(soup.encode('utf-8'))
         # 写入的内容的形式容易出错，这里使用utf8编码
         # -----------------------------------------
+    def getcontent(self, response, item):
+        soup = bs4.BeautifulSoup(response.text, 'html.parser')  # 对内容进行bs4包装
+        head_tag = soup.head  # 定义head的Tag（重复利用）
+        body_tag = soup.body
+        #-*-*-*-*-*-*-*-*-*-*-数据记录-*-*-*-*-*-*-*-*-*-*-*-#
+        #---------帖子标题---------#
+        if head_tag.title.string:
+            item['title'] = head_tag.title.string
+        else:
+            item['title'] = 'error'
+        #---------帖子关键字---------#
+        if head_tag.select('meta')[1]['content']:
+            item['keywords'] = head_tag.select('meta')[1]['content']
+        else:
+            item['keywords'] = 'error'
+        #---------帖子描述---------#
+        if head_tag.select('meta')[2]['content']:
+            item['description'] = head_tag.select('meta')[2]['content']
+        else:
+            item['description'] = 'error'
+        #---------发帖时间---------#
+        if soup.find_all("em", id=re.compile("^authorposton"))[0].string:
+            item['publishtime'] = soup.find_all(
+                "em", id=re.compile("^authorposton"))[0].string
+        else:
+            item['publishtime'] = 'error'
+        #---------查看次数---------#
+        if soup.find_all("span", class_="xi1")[0].string:
+            item['lookTimes'] = soup.find_all("span", class_="xi1")[0].string
+        else:
+            item['lookTimes'] = 'error'
+        #---------回复次数---------#
+        if soup.find_all("span", class_="xi1")[1].string:
+            item['replyTimes'] = soup.find_all("span", class_="xi1")[1].string
+        else:
+            item['replyTimes'] = 'error'

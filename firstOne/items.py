@@ -20,12 +20,13 @@ class ItcastItem(scrapy.Item):
 
 class JbItem(scrapy.Item):
 
-    thread = scrapy.Field()
-    title = scrapy.Field()
-    keywords = scrapy.Field()
-    description = scrapy.Field()
-    lookTimes = scrapy.Field()
-    replyTimes = scrapy.Field()
+    thread = scrapy.Field()         # 序列号
+    title = scrapy.Field()          # 标题
+    keywords = scrapy.Field()       # 关键字
+    description = scrapy.Field()    # 描述
+    publishtime = scrapy.Field()    # 发布时间
+    lookTimes = scrapy.Field()      # 查看次数
+    replyTimes = scrapy.Field()     # 回复次数
 
     magnet = scrapy.Field()
     torrent = scrapy.Field()
