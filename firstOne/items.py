@@ -21,6 +21,8 @@ class ItcastItem(scrapy.Item):
 class JbItem(scrapy.Item):
 
     thread = scrapy.Field()
+    title = scrapy.Field()
+    keywords = scrapy.Field()
     description = scrapy.Field()
     lookTimes = scrapy.Field()
     replyTimes = scrapy.Field()

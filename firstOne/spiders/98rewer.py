@@ -2,9 +2,11 @@ import scrapy
 from firstOne.items import JbItem
 import bs4
 import requests
+import json
 
 
 class JbSpider(scrapy.Spider):
+
     name = "98"
     allowed_domains = ["98rewer.me"]
     start_urls = [
@@ -12,36 +14,46 @@ class JbSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
+        # 过程计数
+        count = 0
         item = JbItem()
-        # item['name'] = response.xpath(
-        #     "//*[@id='postmessage_2819543']/text()").extract()
-        # item['lookTimes'] = response.xpath(
-        #     "/html/body/div[6]/div[6]/div[2]/table[1]/tbody/tr/td[1]/div/span[2]/text()").extract()
-        # item['replyTimes'] = response.xpath(
-        #     "//*[@id='postlist']/table[1]/tbody/tr/td[1]/div/span[5]/text()").extract()
 
-        # item['magnet'] = response.xpath(
-        #     "//*[@id = 'code_EWm']/ol/li/text()").extract()
-        # item['torrent'] = response.xpath(
-        #     "//*[@id='aid634287']/@href").extract()
-        # item['torrentMessage'] = response.xpath(
-        #     "//*[@id='pid2819543']/tbody/tr[1]/td[2]/div[2]/div/div[1]/div[2]/ignore_js_op/dl/dd/p[3]/text()").extract()
         items = []
-        for i in range(1, 370000):  # 0-99
-            item = {}
-            item['thread'] = i  # 记录帖子序号
-            response_transient = requests.get(
-                response.url + str(item['thread']))  # 获取新url请求内容对象
-            soup = bs4.BeautifulSoup(
-                response_transient.text, 'html.parser')  # 对内容进行bs4包装
-            head_tag = soup.head  # 定义head的Tag（重复利用）
-            if head_tag.select('meta')[2]['content']:  # 记录帖子描述
-                item['description'] = head_tag.select(                                           'meta')[2]['content']
-            else :
-                item['description'] = 'error'
-            # print(item)
-            # items.append(item)
-            yield item  # 获取数据，执行pipe，继续执行
+        with open('~/x0.json', 'r', encoding='utf-8') as f:  # 打开扫描文件
+            # file = open('~/x0.json', 'ab+')  # 打开记录文件
+            while 1:
+                count += 1  # 过程计数
+
+                jsonLinestr = f.readline()  # 读取一行的的json对象
+                if jsonLinestr == '':
+                    print('统计完成')
+                    break
+                jsonLine = json.loads(jsonLinestr)  # 转换数据
+                # 筛选数据（目标记录数据）
+                i = jsonLine['thread']
+
+                item = {}
+                item['thread'] = i  # 记录帖子序号
+                response_transient = requests.get(
+                    response.url + str(item['thread']))  # 获取新url请求内容对象
+                soup = bs4.BeautifulSoup(
+                    response_transient.text, 'html.parser')  # 对内容进行bs4包装
+                head_tag = soup.head  # 定义head的Tag（重复利用）
+                if head_tag.select('title'):  # 记录帖子标题
+                    item['title'] = head_tag.select('title')
+                else:
+                    item['title'] = 'error'
+                if head_tag.select('meta')[1]['content']:  # 记录帖子关键字
+                    item['keywords'] = head_tag.select('meta')[1]['content']
+                else:
+                    item['keywords'] = 'error'
+                if head_tag.select('meta')[2]['content']:  # 记录帖子描述
+                    item['description'] = head_tag.select('meta')[2]['content']
+                else:
+                    item['description'] = 'error'
+                # print(item)
+                # items.append(item)
+                yield item  # 获取数据，执行pipe，继续执行
         # return items  # 获取数据结束程序
         # print(requests.get(urlSend))
         #
