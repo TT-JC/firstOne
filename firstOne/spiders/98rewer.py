@@ -32,7 +32,7 @@ class JbSpider(scrapy.Spider):
                 jsonLine = json.loads(jsonLinestr)  # 转换数据
                 # 筛选数据（目标记录数据）
                 i = jsonLine['thread']
-                if i <= 350000:
+                if i <= 150047:
                     continue
 
                 item = {}           # 清空字典
@@ -40,11 +40,16 @@ class JbSpider(scrapy.Spider):
                 response_transient = requests.get(
                     response.url + str(item['thread']))  # 获取新url请求内容对象
 
-                self.getcontent(response_transient, item)
+                try:
+                    self.getcontent(response_transient, item)
+                except:
+                    continue
+                else:
+                    yield item
                 # print(item)
                 # items.append(item)
 
-                yield item  # 获取数据，执行pipe，继续执行
+                # 获取数据，执行pipe，继续执行
 
         # return items  # 获取数据结束程序
         # print(requests.get(urlSend))
