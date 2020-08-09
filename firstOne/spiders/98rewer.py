@@ -32,8 +32,8 @@ class JbSpider(scrapy.Spider):
                 jsonLine = json.loads(jsonLinestr)  # 转换数据
                 # 筛选数据（目标记录数据）
                 i = jsonLine['thread']
-                # if i <= 5132:
-                #     continue
+                if i <= 30807:
+                    continue
 
                 item = {}           # 清空字典
                 item['thread'] = i  # 记录帖子序号
