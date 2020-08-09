@@ -32,7 +32,7 @@ class JbSpider(scrapy.Spider):
                 jsonLine = json.loads(jsonLinestr)  # 转换数据
                 # 筛选数据（目标记录数据）
                 i = jsonLine['thread']
-                if i <= 350157:
+                if i <= 204237 or i >= 250000:
                     continue
 
                 item = {}           # 清空字典
